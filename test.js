@@ -1,45 +1,90 @@
-"use strict";
+'use strict'
 
 const kawpow = require('./index.js');
 
 process.title = 'verify-test';
 
-const expectedMixHash = '56ea99f4e653df0eda8cbf669e68d2f98d2811ccc4c9aaf1012d11c34505b7a9';
-const expectedHash = 'd7b547bee828029701c7f1766c42f9cc5a9013c8e16d24a1854334d9fcef17b9';
+const headerHashBuf = Buffer.from('63543d3913fe56e6720c5e61e8d208d05582875822628f483279a3e8d9c9a8b3', 'hex');
+const nonceBuf = hexToLE('88a23b0033eb959b');
+const blockHeight = 262523;
 
-const headerHashBuf = Buffer.alloc(32, 1);
-const nonceBuf = Buffer.alloc(8, 0);
-nonceBuf[0] = 1;
+const expectedMixHash = '89732e5ff8711c32558a308fc4b8ee77416038a70995670e3eb84cbdead2e337';
+const expectedHash = '0000000718ba5143286c46f44eee668fdf59b8eba810df21e4e2f4ec9538fc20';
 
-const mixOutBuf = Buffer.alloc(32);
-const hashOutBuf = Buffer.alloc(32);
+// Hash data
+const hashResult = hash(headerHashBuf, nonceBuf, blockHeight);
 
-kawpow.hashOne(headerHashBuf, nonceBuf, 10, mixOutBuf, hashOutBuf);
+// Verify mix hash
+verify(hashResult.mixHashBuf, hashResult.hash, 1000);
 
-const mixHash = mixOutBuf.toString('hex');
-const hash = hashOutBuf.toString('hex');
+console.log('Test completed successfully.');
 
-console.log(`Mix Hash: ${mixHash}`);
-if (mixHash !== expectedMixHash)
-    throw new Error(`Got invalid mix hash. Expected ${expectedMixHash}`);
 
-console.log(`Hash: ${hash}`);
-if (hash !== expectedHash)
-    throw new Error(`Got invalid hash. Expected ${expectedHash}`);
+function hash(headerHashBuf, nonceBuf, blockHeight) {
 
-// Verify
+    const mixOutBuf = Buffer.alloc(32, 0);
+    const hashOutBuf = Buffer.alloc(32, 0);
 
-const mixHashBuf = Buffer.from(mixHash, 'hex');
-const verifyHashOutBuf = Buffer.alloc(32);
+    kawpow.hashOne(headerHashBuf, nonceBuf, blockHeight, mixOutBuf, hashOutBuf);
 
-const isValid = kawpow.verify(headerHashBuf, nonceBuf, 10, mixHashBuf, verifyHashOutBuf);
+    const mixHash = mixOutBuf.toString('hex');
+    const hash = hashOutBuf.toString('hex');
 
-console.log(`isValid: ${isValid}`);
-if (!isValid)
-    throw new Error('Expected valid result but result is invalid.');
+    console.log(`Mix Hash: ${mixHash}`);
+    console.log(`Expected: ${expectedMixHash}\n`);
+    console.log(`Hash:     ${hash}`);
+    console.log(`Expected: ${expectedHash}\n`);
 
-const verifiedHash = verifyHashOutBuf.toString('hex');
-console.log(`Verified Hash: ${verifiedHash}`)
-if (verifiedHash !== hash)
-    throw new Error(`Verified hash output does not match original hash.`);
+    if (mixHash !== expectedMixHash)
+        throw new Error(`Got invalid mix hash. Expected ${expectedMixHash}`);
 
+    if (hash !== expectedHash)
+        throw new Error(`Got invalid hash. Expected ${expectedHash}`);
+
+    return {
+        mixHashBuf: mixOutBuf,
+        hash: hash
+    };
+}
+
+
+function verify(mixHashBuf, expectedHash, iterations) {
+
+    console.log(`Verifying with ${iterations} iterations...`);
+
+    const verifyHashOutBuf = Buffer.alloc(32);
+    const startTimeMs = Date.now();
+
+    for (let i = 0; i < iterations; i++) {
+        const isValid = kawpow.verify(headerHashBuf, nonceBuf, blockHeight, mixHashBuf, verifyHashOutBuf);
+        if (!isValid)
+            throw new Error('Verification failed.');
+    }
+
+    const endTimeMs = Date.now();
+
+    const verifiedHash = verifyHashOutBuf.toString('hex');
+    console.log(`Verified Hash: ${verifiedHash}`)
+    if (verifiedHash !== expectedHash)
+        throw new Error(`Verified hash output does not match original hash.`);
+
+    const verifyPs = iterations / (endTimeMs - startTimeMs) * 1000;
+    console.log(`verify/sec = ${verifyPs}\n`);
+}
+
+
+function hexToLE(hex) {
+    return reverseBytes(Buffer.from(hex, 'hex'));
+}
+
+
+function reverseBytes(buffer, output) {
+    output = output || buffer;
+    const halfLen = buffer.length / 2;
+    for (let i = 0; i < halfLen; i++) {
+        const byte = buffer[i];
+        output[i] = buffer[buffer.length - i - 1];
+        output[buffer.length - i - 1] = byte;
+    }
+    return output;
+}
