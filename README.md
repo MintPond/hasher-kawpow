@@ -5,7 +5,8 @@ This is a Node module for simple hashing and verifying inputs using the
 KawPOW proof-of-work algorithm as implemented by [Ravencoin](https://github.com/RavenProject/Ravencoin/releases/tag/v4.0.0). 
 Most of the native code comes from or is adapted from [Ravencoin code](https://github.com/RavenProject/Ravencoin).
 
-This module has been developed and tested on [Node v10.16.3](https://nodejs.org/) and [Ubuntu 16.04](http://releases.ubuntu.com/16.04/)
+This module has been developed and tested on [Node v10.16.3](https://nodejs.org/) and 
+[Ubuntu 16.04](http://releases.ubuntu.com/16.04/) for the [Ravencoin mining pool](https://mintpond.com/#!/ravencoin) at [MintPond](https://mintpond.com).
 
 ## Install ##
 __Install as Dependency in NodeJS Project__
