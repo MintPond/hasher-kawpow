@@ -34,8 +34,10 @@ static PyObject* pow(PyObject *self, PyObject *args) {
     PyBuffer_Release(&header_hash_buf);
     PyBuffer_Release(&nonce64_buf);
 
-    PyObject *result = PyBytes_FromStringAndSize((const char *)&hash_out, sizeof(ethash::hash256));
-    return result;
+    PyObject *hash_py = PyBytes_FromStringAndSize((const char *)&hash_out, sizeof(ethash::hash256));
+    PyObject *mix_py = PyBytes_FromStringAndSize((const char *)&mix_out, sizeof(ethash::hash256));
+    PyObject *tuple = Py_BuildValue("(OO)", hash_py, mix_py);
+    return tuple;
 }
 
 static PyObject *verify(PyObject *self, PyObject *args) {
