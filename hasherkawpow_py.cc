@@ -3,8 +3,26 @@
 #include "ethash.h"
 #include "ethash.hpp"
 #include "progpow.hpp"
+#include "keccak.hpp"
 #include "uint256.h"
 #include "helpers.hpp"
+
+static PyObject* keccak_256(PyObject *self, PyObject *args) {
+    Py_buffer buf;
+    if (!PyArg_ParseTuple(args, "y*", &buf))
+        return NULL;
+
+    const uint8_t* buf_ptr = (uint8_t*)buf.buf;
+    const size_t buf_len = (size_t)buf.len;
+    ethash::hash256 hash_out;
+
+    const ethash::hash256 hash = ethash::keccak256(buf_ptr, buf_len);
+
+    PyBuffer_Release(&buf);
+
+    PyObject *hash_py = PyBytes_FromStringAndSize((const char *)&hash, sizeof(ethash::hash256));
+    return hash_py;
+}
 
 static ethash::epoch_context_ptr context{nullptr, nullptr};
 
@@ -41,6 +59,7 @@ static PyObject* pow(PyObject *self, PyObject *args) {
 }
 
 static PyMethodDef methods[] = {
+        {"keccak_256", (PyCFunction)keccak_256, METH_VARARGS},
         {"pow", (PyCFunction)pow, METH_VARARGS},
         {NULL, NULL}
 };
