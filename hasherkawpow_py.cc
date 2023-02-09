@@ -40,42 +40,8 @@ static PyObject* pow(PyObject *self, PyObject *args) {
     return tuple;
 }
 
-static PyObject *verify(PyObject *self, PyObject *args) {
-        Py_buffer header_hash_buf, nonce64_buf, mix_hash_buf, hash_out_buf;
-        int block_height;
-        static ethash::epoch_context_ptr context{nullptr, nullptr};
-
-        if (!PyArg_ParseTuple(args, "y*y*iy*y*", &header_hash_buf, &nonce64_buf, &block_height, &mix_hash_buf, &hash_out_buf))
-            return NULL;
-
-        const ethash::hash256* header_hash_ptr = (ethash::hash256*)header_hash_buf.buf;
-        uint64_t* nonce64_ptr = (uint64_t*)nonce64_buf.buf;
-        const ethash::hash256* mix_hash_ptr = (ethash::hash256*)mix_hash_buf.buf;
-        ethash::hash256* hash_out_ptr = (ethash::hash256*)hash_out_buf.buf;
-
-        const auto epoch_number = ethash::get_epoch_number(block_height);
-
-        if (!context || context->epoch_number != epoch_number)
-            context = ethash::create_epoch_context(epoch_number);
-
-        bool is_valid = progpow::verify(*context, block_height, header_hash_ptr, *mix_hash_ptr, *nonce64_ptr, hash_out_ptr);
-
-        PyBuffer_Release(&header_hash_buf);
-        PyBuffer_Release(&nonce64_buf);
-        PyBuffer_Release(&mix_hash_buf);
-        PyBuffer_Release(&hash_out_buf);
-
-        if (is_valid) {
-            Py_RETURN_TRUE;
-        }
-        else {
-            Py_RETURN_FALSE;
-        }
-}
-
 static PyMethodDef methods[] = {
         {"pow", (PyCFunction)pow, METH_VARARGS},
-        {"verify", (PyCFunction)verify, METH_VARARGS},
         {NULL, NULL}
 };
 
