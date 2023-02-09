@@ -98,28 +98,28 @@ static INLINE ALWAYS_INLINE void keccak(
         out[i] = to_le64(state[i]);
 }
 
-union ethash_hash256 ethash_keccak256(const uint8_t* data, size_t size)
+union ethash_hash256 ethash_keccak256(const uint8_t* data, size_t size) noexcept
 {
     union ethash_hash256 hash;
     keccak(hash.word64s, 256, data, size);
     return hash;
 }
 
-union ethash_hash256 ethash_keccak256_32(const uint8_t data[32])
+union ethash_hash256 ethash_keccak256_32(const uint8_t data[32]) noexcept
 {
     union ethash_hash256 hash;
     keccak(hash.word64s, 256, data, 32);
     return hash;
 }
 
-union ethash_hash512 ethash_keccak512(const uint8_t* data, size_t size)
+union ethash_hash512 ethash_keccak512(const uint8_t* data, size_t size) noexcept
 {
     union ethash_hash512 hash;
     keccak(hash.word64s, 512, data, size);
     return hash;
 }
 
-union ethash_hash512 ethash_keccak512_64(const uint8_t data[64])
+union ethash_hash512 ethash_keccak512_64(const uint8_t data[64]) noexcept
 {
     union ethash_hash512 hash;
     keccak(hash.word64s, 512, data, 64);

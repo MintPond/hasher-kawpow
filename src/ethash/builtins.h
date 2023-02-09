@@ -13,9 +13,6 @@
 #ifdef _MSC_VER
 #include <intrin.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Returns the number of leading 0-bits in `x`, starting at the most significant bit position.
@@ -35,9 +32,5 @@ static inline int __builtin_popcount(unsigned int x)
 {
     return (int)__popcnt(x);
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

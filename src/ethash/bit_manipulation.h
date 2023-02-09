@@ -10,10 +10,6 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 static inline uint32_t rotl32(uint32_t n, unsigned int c)
 {
     const unsigned int mask = 31;
@@ -75,7 +71,3 @@ static inline uint32_t fnv1a(uint32_t u, uint32_t v) noexcept
 {
     return (u ^ v) * fnv_prime;
 }
-
-#ifdef __cplusplus
-}
-#endif

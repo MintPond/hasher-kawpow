@@ -7,10 +7,6 @@
 
 #include <include/ethash.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Finds the largest prime number not greater than the provided upper bound.
  *
@@ -19,7 +15,3 @@ extern "C" {
  *          In case `upper_bound <= 1`, returns 0.
  */
 int ethash_find_largest_prime(int upper_bound) NOEXCEPT;
-
-#ifdef __cplusplus
-}
-#endif

@@ -21,7 +21,7 @@ static int is_odd_prime(int number)
     return 1;
 }
 
-int ethash_find_largest_prime(int upper_bound)
+int ethash_find_largest_prime(int upper_bound) noexcept
 {
     int n = upper_bound;
 

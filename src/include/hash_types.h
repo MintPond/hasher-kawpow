@@ -7,10 +7,6 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 union ethash_hash256
 {
     uint64_t word64s[4];
@@ -44,7 +40,3 @@ union ethash_hash2048
     uint8_t bytes[256];
     char str[256];
 };
-
-#ifdef __cplusplus
-}
-#endif
