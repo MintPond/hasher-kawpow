@@ -14,12 +14,12 @@ static PyObject* keccak_256(PyObject *self, PyObject *args) {
 
     const uint8_t* buf_ptr = (uint8_t*)buf.buf;
     const size_t buf_len = (size_t)buf.len;
-    ethash::hash256 hash_out;
 
     const ethash::hash256 hash = ethash::keccak256(buf_ptr, buf_len);
+    
+    PyBuffer_Release(&buf);
 
     PyObject *hash_py = PyBytes_FromStringAndSize((const char *)&hash, sizeof(ethash::hash256));
-    PyBuffer_Release(&buf);
     return hash_py;
 }
 
