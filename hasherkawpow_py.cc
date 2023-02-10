@@ -54,6 +54,8 @@ static PyObject* pow(PyObject *self, PyObject *args) {
     PyObject *hash_py = PyBytes_FromStringAndSize((const char *)&hash_out, sizeof(ethash::hash256));
     PyObject *mix_py = PyBytes_FromStringAndSize((const char *)&mix_out, sizeof(ethash::hash256));
     PyObject *tuple = Py_BuildValue("(OO)", hash_py, mix_py);
+    Py_DECREF(hash_py);
+    Py_DECREF(mix_py);
     return tuple;
 }
 

@@ -3,14 +3,16 @@ import kawpow
 
 class TestEthash(unittest.TestCase):
     def test_keccak(self):
-        h256 = ('c5d2460186f7233c927e7db2dcc703c0'
-                'e500b653ca82273b7bfad8045d85a470')
+        hash_empty = (
+            'c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470')
 
-        self.assertEqual(kawpow.keccak_256(b'').hex(), h256)
+        h = kawpow.keccak_256(b'').hex()
+        
+        self.assertEqual(h, hash_empty)
 
-    def test_hash(self):
+    def test_pow(self):
         block_height = 2543241
-        nonce = 0xc9b1000029c69813
+        nonce = int.to_bytes(0xc9b1000029c69813, 8, 'little', signed=False)
         header_hash = bytes.fromhex(
             '0565cd49085a5b50b783aa1ba12b7fc73fffd6dc5345de1fb5389b0977e4caa2')
         mix_hash = bytes.fromhex(
@@ -18,7 +20,7 @@ class TestEthash(unittest.TestCase):
         final_hash = bytes.fromhex(
             '3755265d35ae6bd9b205850a6b9166a67cd7880bd49bc5ba832d21c583ff90d4')
 
-        f, m = kawpow.pow(header_hash, int.to_bytes(nonce, 8, 'little', signed=False), block_height)
+        f, m = kawpow.pow(header_hash, nonce, block_height)
 
         self.assertEqual(m, mix_hash)
         self.assertEqual(f, final_hash)
